@@ -14,16 +14,22 @@ import { useState } from "react";
 export default function EventForm({
   onAddEvent,
 }: {
-  onAddEvent: (event: { title: string; start: string }) => void;
+  onAddEvent: (event: { title: string; start: string; end: string }) => void;
 }) {
   const [title, setTitle] = useState("");
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [startDate, setStartDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
+  const [endDate, setEndDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
 
   const handleSubmit = () => {
-    if (title && date) {
-      onAddEvent({ title, start: date });
+    if (title && startDate) {
+      onAddEvent({ title, start: startDate, end: endDate });
       setTitle("");
-      setDate("");
+      setStartDate(new Date().toISOString().split("T")[0]);
+      setEndDate(new Date().toISOString().split("T")[0]);
     }
   };
 
@@ -43,11 +49,24 @@ export default function EventForm({
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
-          <Input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-          />
+          <div className="flex gap-4">
+            <div className="flex flex-col">
+              <span>시작일</span>
+              <Input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
+            </div>
+            <div className="flex flex-col">
+              <span>종료일</span>
+              <Input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+              />
+            </div>
+          </div>
           <Button onClick={handleSubmit}>추가</Button>
         </div>
       </DialogContent>

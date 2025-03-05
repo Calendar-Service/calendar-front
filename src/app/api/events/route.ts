@@ -1,26 +1,29 @@
 import { NextResponse } from "next/server";
 
-let events = [
-  { id: "1", title: "팀 회의", start: "2024-03-01" },
-  { id: "2", title: "스터디", start: "2024-03-05" },
-];
+let events: Array<{
+  id: string;
+  title: string;
+  start: string;
+  end: string;
+}> = [];
 
 // 일정 목록 가져오기 (GET)
-export async function GET() {
+export const GET = () => {
   return NextResponse.json(events);
-}
+};
 
 // 일정 추가 (POST)
-export async function POST(req: Request) {
-  const { title, start } = await req.json();
-  const newEvent = { id: String(events.length + 1), title, start };
+export const POST = async (req: Request) => {
+  const { title, start, end } = await req.json();
+  const newEvent = { id: String(events.length + 1), title, start, end };
   events.push(newEvent);
+  console.log(events);
   return NextResponse.json(newEvent, { status: 201 });
-}
+};
 
 // 일정 삭제 (DELETE)
-export async function DELETE(req: Request) {
+export const DELETE = async (req: Request) => {
   const { id } = await req.json();
   events = events.filter((event) => event.id !== id);
   return NextResponse.json({ message: "Deleted" });
-}
+};

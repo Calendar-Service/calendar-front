@@ -2,7 +2,7 @@
 
 import { EventClickArg } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin from "@fullcalendar/interaction";
+import interactionPlugin, { DateClickArg } from "@fullcalendar/interaction";
 import FullCalendar from "@fullcalendar/react";
 import { useEffect, useState } from "react";
 
@@ -10,9 +10,16 @@ interface Event {
   id: string;
   title: string;
   start: string;
+  end: string;
 }
 
-const Calendar = ({ events }: { events: Event[] }) => {
+const Calendar = ({
+  events,
+  onDateClick,
+}: {
+  events: Event[];
+  onDateClick: (date: string) => void;
+}) => {
   const [localEvents, setLocalEvents] = useState<Event[]>(events);
 
   useEffect(() => {
@@ -33,12 +40,17 @@ const Calendar = ({ events }: { events: Event[] }) => {
     }
   };
 
+  const handleDateClick = (arg: DateClickArg) => {
+    onDateClick(arg.dateStr); // 날짜를 클릭하면 부모 컴포넌트(Home)에서 selectedDate 업데이트
+  };
+
   return (
     <FullCalendar
       plugins={[dayGridPlugin, interactionPlugin]}
       initialView="dayGridMonth"
       events={localEvents}
       eventClick={handleEventClick}
+      dateClick={handleDateClick} // ✅ 날짜 클릭 시 실행
     />
   );
 };

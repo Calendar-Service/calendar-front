@@ -48,6 +48,7 @@ const Calendar = ({
     <FullCalendar
       plugins={[dayGridPlugin, interactionPlugin]}
       initialView="dayGridMonth"
+      locale={"ko"}
       events={localEvents}
       eventClick={handleEventClick}
       dateClick={handleDateClick} // ✅ 날짜 클릭 시 실행

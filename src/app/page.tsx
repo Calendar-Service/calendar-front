@@ -1,10 +1,8 @@
-"use client";
-
 import Calendar from "@/components/Calendar";
 import EventForm from "@/components/EventForm";
 import { useEffect, useState } from "react";
 
-export default function Home() {
+const Home = () => {
   const [events, setEvents] = useState<
     { id: string; title: string; start: string }[]
   >([]);
@@ -23,14 +21,16 @@ export default function Home() {
     });
 
     const addedEvent = await res.json();
-    setEvents([...events, addedEvent]);
+    setEvents((prevEvents) => [...prevEvents, addedEvent]);
   };
 
   return (
     <main className="flex flex-col items-center gap-6 p-6">
-      <h1 className="text-3xl font-bold">📅</h1>
+      <h1 className="text-3xl font-bold">📅 캘린더 공유 프로그램</h1>
       <EventForm onAddEvent={addEvent} />
-      <Calendar events={events} /> {/* ✅ props 전달 */}
+      <Calendar events={events} />
     </main>
   );
-}
+};
+
+export default Home;

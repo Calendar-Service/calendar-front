@@ -12,12 +12,7 @@ interface Event {
   start: string;
 }
 
-interface CalendarProps {
-  events: Event[];
-}
-
-export default function Calendar({ events }: CalendarProps) {
-  // ✅ props 타입 명시
+const Calendar = ({ events }: { events: Event[] }) => {
   const [localEvents, setLocalEvents] = useState<Event[]>(events);
 
   useEffect(() => {
@@ -25,15 +20,15 @@ export default function Calendar({ events }: CalendarProps) {
   }, [events]);
 
   const handleEventClick = async (clickInfo: EventClickArg) => {
-    if (confirm(`"${clickInfo.event.title}" 일정을 삭제하시겠습니까?`)) {
+    if (window.confirm(`"${clickInfo.event.title}" 일정을 삭제하시겠습니까?`)) {
       await fetch("/api/events", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: clickInfo.event.id }),
       });
 
-      setLocalEvents(
-        localEvents.filter((event) => event.id !== clickInfo.event.id)
+      setLocalEvents((prevEvents) =>
+        prevEvents.filter((event) => event.id !== clickInfo.event.id)
       );
     }
   };
@@ -46,4 +41,6 @@ export default function Calendar({ events }: CalendarProps) {
       eventClick={handleEventClick}
     />
   );
-}
+};
+
+export default Calendar;

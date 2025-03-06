@@ -16,25 +16,40 @@ export default function EventForm({
 }: {
   onAddEvent: (event: { title: string; start: string; end: string }) => void;
 }) {
+  const date = new Date(new Date().getTime() + 9 * 60 * 60 * 1000)
+    .toISOString()
+    .split("T")[0];
+  const time = new Date(new Date().getTime() + 9 * 60 * 60 * 1000)
+    .toISOString()
+    .split("T")[1]
+    .split(".")[0]
+    ?.slice(0, 5);
+
   const [title, setTitle] = useState("");
-  const [startDate, setStartDate] = useState(
-    new Date().toISOString().split("T")[0]
-  );
-  const [endDate, setEndDate] = useState(
-    new Date().toISOString().split("T")[0]
-  );
+  const [open, setOpen] = useState(false);
+
+  const [startDate, setStartDate] = useState(date);
+  const [startTime, setStartTime] = useState(time);
+  const [endDate, setEndDate] = useState(date);
+  const [endTime, setEndTime] = useState(time);
 
   const handleSubmit = () => {
     if (title && startDate) {
-      onAddEvent({ title, start: startDate, end: endDate });
+      onAddEvent({
+        title,
+        start: startDate + "T" + startTime,
+        end: endDate + "T" + endTime,
+      });
       setTitle("");
-      setStartDate(new Date().toISOString().split("T")[0]);
-      setEndDate(new Date().toISOString().split("T")[0]);
+      setStartDate(date);
+      setEndDate(date);
+
+      setOpen(false);
     }
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline">새로운 일정 추가</Button>
       </DialogTrigger>
@@ -49,22 +64,40 @@ export default function EventForm({
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
-          <div className="flex gap-4">
-            <div className="flex flex-col">
-              <span>시작일</span>
-              <Input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-              />
+          <div className="flex flex-col gap-1">
+            <span>시작</span>
+            <div className="flex">
+              <div className="flex gap-2">
+                <Input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+              </div>
+              <div className="flex gap-2">
+                <Input
+                  type="time"
+                  value={startTime}
+                  onChange={(e) => setStartTime(e.target.value)}
+                />
+              </div>
             </div>
-            <div className="flex flex-col">
-              <span>종료일</span>
-              <Input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-              />
+            <span>종료</span>
+            <div className="flex ">
+              <div className="flex gap-2">
+                <Input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
+              </div>
+              <div className="flex gap-2">
+                <Input
+                  type="time"
+                  value={endTime}
+                  onChange={(e) => setEndTime(e.target.value)}
+                />
+              </div>
             </div>
           </div>
           <Button onClick={handleSubmit}>추가</Button>

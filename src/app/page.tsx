@@ -55,12 +55,17 @@ const Home = () => {
 
         {/* 일정 리스트 (1/3) */}
         <div className="w-1/3 bg-white shadow-lg p-4 rounded-lg">
-          <h2 className="text-xl font-semibold mb-4">
-            📋{" "}
-            {selectedDate
-              ? `${changeDateToKorean(selectedDate)} 일정`
-              : "전체 일정"}
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold mb-4">
+              📋{" "}
+              {selectedDate
+                ? `${changeDateToKorean(selectedDate)} 일정`
+                : "전체 일정"}
+            </h2>
+            <div className="justify-self-end mb-4">
+              <EventForm onAddEvent={addEvent} />
+            </div>
+          </div>
           <ul className="space-y-2">
             {events.filter(
               (event) =>
@@ -85,9 +90,6 @@ const Home = () => {
             ) : (
               <p className="text-gray-500">해당 날짜에 일정이 없습니다.</p>
             )}
-            <div className="justify-self-end">
-              <EventForm onAddEvent={addEvent} />
-            </div>
           </ul>
         </div>
       </div>

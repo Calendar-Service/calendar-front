@@ -63,7 +63,7 @@ const Home = () => {
                 : "전체 일정"}
             </h2>
             <div className="justify-self-end mb-4">
-              <EventForm onAddEvent={addEvent} />
+              <EventForm onAddEvent={addEvent} selectedDate={selectedDate} />
             </div>
           </div>
           <ul className="space-y-2">

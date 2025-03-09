@@ -9,17 +9,21 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export default function EventForm({
+const EventForm = ({
   onAddEvent,
+  selectedDate,
 }: {
   onAddEvent: (event: { title: string; start: string; end: string }) => void;
-}) {
-  const date = new Date(new Date().getTime() + 9 * 60 * 60 * 1000)
-    .toISOString()
-    .split("T")[0];
-  const time = new Date(new Date().getTime() + 9 * 60 * 60 * 1000)
+  selectedDate: string | null;
+}) => {
+  const defaultDate =
+    selectedDate ||
+    new Date(new Date().getTime() + 9 * 60 * 60 * 1000)
+      .toISOString()
+      .split("T")[0];
+  const defaultTime = new Date(new Date().getTime() + 9 * 60 * 60 * 1000)
     .toISOString()
     .split("T")[1]
     .split(".")[0]
@@ -28,10 +32,16 @@ export default function EventForm({
   const [title, setTitle] = useState("");
   const [open, setOpen] = useState(false);
 
-  const [startDate, setStartDate] = useState(date);
-  const [startTime, setStartTime] = useState(time);
-  const [endDate, setEndDate] = useState(date);
-  const [endTime, setEndTime] = useState(time);
+  const [startDate, setStartDate] = useState(defaultDate);
+  const [startTime, setStartTime] = useState(defaultTime);
+  const [endDate, setEndDate] = useState(defaultDate);
+  const [endTime, setEndTime] = useState(defaultTime);
+
+  useEffect(() => {
+    if (!selectedDate) return;
+    setStartDate(selectedDate);
+    setEndDate(selectedDate);
+  }, [selectedDate]);
 
   const handleSubmit = () => {
     if (title && startDate) {
@@ -41,8 +51,8 @@ export default function EventForm({
         end: endDate + "T" + endTime,
       });
       setTitle("");
-      setStartDate(date);
-      setEndDate(date);
+      setStartDate(defaultDate);
+      setEndDate(defaultDate);
 
       setOpen(false);
     }
@@ -105,4 +115,6 @@ export default function EventForm({
       </DialogContent>
     </Dialog>
   );
-}
+};
+
+export default EventForm;

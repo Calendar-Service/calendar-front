@@ -37,9 +37,9 @@ const Home = () => {
     eventEnd: string | undefined,
     date: string
   ) => {
-    const startDate = new Date(eventStart);
-    const endDate = eventEnd ? new Date(eventEnd) : startDate;
-    const clickedDate = new Date(date);
+    const startDate = new Date(eventStart.split("T")[0]);
+    const endDate = eventEnd ? new Date(eventEnd.split("T")[0]) : startDate;
+    const clickedDate = new Date(date.split("T")[0]);
 
     return clickedDate >= startDate && clickedDate <= endDate;
   };

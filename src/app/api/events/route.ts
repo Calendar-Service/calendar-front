@@ -1,3 +1,4 @@
+import axios from "axios";
 import { NextResponse } from "next/server";
 
 let events: Array<{
@@ -6,6 +7,17 @@ let events: Array<{
   start: string;
   end: string;
 }> = [];
+
+export const fetchSchedules = async () => {
+  try {
+    const response = await axios.get("http://43.202.122.199/api/v1/schedules");
+    console.log("📅 스케줄 데이터:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("❌ 스케줄 데이터 가져오기 실패:", error);
+    return [];
+  }
+};
 
 // 일정 목록 가져오기 (GET)
 export const GET = () => {

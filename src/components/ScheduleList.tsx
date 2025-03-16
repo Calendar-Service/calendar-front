@@ -1,5 +1,5 @@
-import { fetchSchedules } from "@/app/api/events/route";
 import EventForm from "@/components/EventForm";
+import { fetchSchedules } from "@/lib/api";
 import { useEffect, useState } from "react";
 
 const changeDateToKorean = (date: string | undefined) => {

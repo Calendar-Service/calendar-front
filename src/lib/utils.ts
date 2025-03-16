@@ -1,6 +1,17 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+export const changeDateToKorean = (dateTime: string): string => {
+  const [date] = dateTime.split("T"); // "YYYY-MM-DD"
+  const [year, month, day] = date.split("-");
+  return `${year}년 ${month}월 ${day}일`;
+};
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
+export const isDateInRange = (
+  eventStart: string,
+  eventEnd: string | undefined,
+  date: string
+): boolean => {
+  const startDate = new Date(eventStart.split("T")[0]);
+  const endDate = eventEnd ? new Date(eventEnd.split("T")[0]) : startDate;
+  const clickedDate = new Date(date.split("T")[0]);
+
+  return clickedDate >= startDate && clickedDate <= endDate;
+};

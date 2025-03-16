@@ -1,33 +1,27 @@
 "use client";
 
-import Calendar from "@/components/Calendar";
-import ScheduleList from "@/components/ScheduleList";
-import { useEffect, useState } from "react";
+import { JSX, useState } from "react";
+import ScheduleCalendar from "./schedule/ScheduleCalendar";
+import ScheduleForm from "./schedule/ScheduleForm";
+import ScheduleList from "./schedule/ScheduleList";
 
-const Home = () => {
-  const [events, setEvents] = useState<
-    { id: string; title: string; start: string; end: string }[]
-  >([]);
+export default function Home(): JSX.Element {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetch("/api/events")
-      .then((res) => res.json())
-      .then((data) => setEvents(data));
-  }, []);
-
   return (
-    <main className="flex flex-col items-center gap-6 p-6">
-      {/* 캘린더 + 일정 리스트 레이아웃 */}
-      <div className="flex w-full max-w gap-4">
-        {/* 캘린더 (2/3) */}
-        <div className="w-2/3 bg-white shadow-lg p-4 rounded-lg">
-          <Calendar events={events} onDateClick={setSelectedDate} />
+    <main className="min-h-screen bg-gray-50 p-6">
+      <h1 className="text-3xl font-bold mb-6 text-center">
+        Calendar & Schedule Management
+      </h1>
+      <div className="flex gap-6">
+        <div className="w-2/3">
+          <ScheduleCalendar onDateSelect={setSelectedDate} />
         </div>
-        <ScheduleList selectedDate={selectedDate} />
+        <div className="w-1/3">
+          <ScheduleList selectedDate={selectedDate} />
+          <ScheduleForm selectedDate={selectedDate} />
+        </div>
       </div>
     </main>
   );
-};
-
-export default Home;
+}

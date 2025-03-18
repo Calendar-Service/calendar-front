@@ -63,8 +63,8 @@ export default function ScheduleForm({
     const scheduleData = {
       title,
       note: "",
-      startDateTime: `${startDate} ${startTime}`,
-      endDateTime: `${endDate} ${endTime}`,
+      startDateTime: `${startDate} ${startTime}:00`,
+      endDateTime: `${endDate} ${endTime}:00`,
       userId: 1,
     };
 
@@ -78,9 +78,17 @@ export default function ScheduleForm({
       }
       onClose();
     } catch (error) {
-      const errorMessage = error as Error;
-      console.error(errorMessage);
+      console.error(error);
       toast.error("일정 저장 중 오류가 발생했습니다. ❌");
+    }
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (selectedSchedule && onDelete) {
+      onDelete(selectedSchedule.id);
+      toast.success("일정이 삭제되었습니다. 🗑️");
+      onClose();
     }
   };
 
@@ -134,10 +142,7 @@ export default function ScheduleForm({
           <div className="flex gap-4">
             <Button type="submit">{isEditing ? "수정" : "추가"}</Button>
             {isEditing && selectedSchedule && onDelete && (
-              <Button
-                className="bg-red-500"
-                onClick={() => onDelete(selectedSchedule.id)}
-              >
+              <Button className="bg-red-500" onClick={handleDeleteClick}>
                 삭제
               </Button>
             )}

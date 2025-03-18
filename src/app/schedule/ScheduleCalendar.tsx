@@ -1,3 +1,4 @@
+// src/app/schedule/ScheduleCalendar.tsx
 "use client";
 
 import { useSchedules } from "@/hooks/useSchedules";
@@ -26,7 +27,7 @@ export default function ScheduleCalendar({
   }));
 
   return (
-    <div className="bg-white shadow p-4 rounded">
+    <div className="bg-white shadow p-4 rounded-lg">
       <FullCalendar
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"

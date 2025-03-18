@@ -1,8 +1,14 @@
+// src/types/schedule.ts
 export interface Schedule {
   id: number;
   title: string;
   note: string;
-  startDateTime: string; // ISO format, e.g. "2025-03-13T12:31:06.436Z"
+  startDateTime: string; // e.g., "2020-12-21 12:12:12" or ISO string
   endDateTime: string;
   userId: number;
+}
+
+export interface ScheduleResponse {
+  count: number;
+  items: Schedule[];
 }

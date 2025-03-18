@@ -1,38 +1,59 @@
+// src/app/schedule/ScheduleForm.tsx
 "use client";
 
-import { addSchedule } from "@/lib/api";
+import { Button } from "@/components/ui/Button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/Dialog";
+import { Input } from "@/components/ui/Input";
+import { addSchedule, updateSchedule } from "@/lib/api";
+import { Schedule } from "@/types/schedule";
 import { JSX, useEffect, useState } from "react";
 
 interface ScheduleFormProps {
-  selectedDate: string | null;
+  selectedSchedule?: Schedule | null;
+  open: boolean;
+  onClose: () => void;
+  onDelete?: (id: number) => void;
 }
 
 export default function ScheduleForm({
-  selectedDate,
+  selectedSchedule,
+  open,
+  onClose,
+  onDelete,
 }: ScheduleFormProps): JSX.Element {
-  // 기본 날짜: 선택된 날짜가 없으면 한국 시간 기준 오늘 날짜 사용
-  const defaultDate =
-    selectedDate ||
-    new Date(new Date().getTime() + 9 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0];
-  const defaultTime = new Date(new Date().getTime() + 9 * 60 * 60 * 1000)
-    .toISOString()
-    .split("T")[1]
-    .slice(0, 5);
+  const isEditing = Boolean(selectedSchedule);
 
-  const [title, setTitle] = useState("");
-  const [startDate, setStartDate] = useState(defaultDate);
-  const [startTime, setStartTime] = useState(defaultTime);
-  const [endDate, setEndDate] = useState(defaultDate);
-  const [endTime, setEndTime] = useState(defaultTime);
+  const defaultDate = new Date().toISOString().split("T")[0];
+  const defaultTime = new Date().toISOString().split("T")[1].slice(0, 5);
+
+  const [title, setTitle] = useState(selectedSchedule?.title || "");
+  const [startDate, setStartDate] = useState(
+    selectedSchedule?.startDateTime.split(" ")[0] || defaultDate
+  );
+  const [startTime, setStartTime] = useState(
+    selectedSchedule?.startDateTime.split(" ")[1] || defaultTime
+  );
+  const [endDate, setEndDate] = useState(
+    selectedSchedule?.endDateTime.split(" ")[0] || defaultDate
+  );
+  const [endTime, setEndTime] = useState(
+    selectedSchedule?.endDateTime.split(" ")[1] || defaultTime
+  );
 
   useEffect(() => {
-    if (selectedDate) {
-      setStartDate(selectedDate);
-      setEndDate(selectedDate);
+    if (selectedSchedule) {
+      setTitle(selectedSchedule.title);
+      setStartDate(selectedSchedule.startDateTime.split(" ")[0]);
+      setStartTime(selectedSchedule.startDateTime.split(" ")[1]);
+      setEndDate(selectedSchedule.endDateTime.split(" ")[0]);
+      setEndTime(selectedSchedule.endDateTime.split(" ")[1]);
     }
-  }, [selectedDate]);
+  }, [selectedSchedule]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,74 +62,80 @@ export default function ScheduleForm({
     const scheduleData = {
       title,
       note: "",
-      startDateTime: `${startDate}T${startTime}:00.000Z`,
-      endDateTime: `${endDate}T${endTime}:00.000Z`,
+      startDateTime: `${startDate} ${startTime}`,
+      endDateTime: `${endDate} ${endTime}`,
       userId: 1,
     };
 
-    await addSchedule(scheduleData);
-    setTitle("");
-    setStartDate(defaultDate);
-    setEndDate(defaultDate);
+    if (isEditing && selectedSchedule) {
+      await updateSchedule(selectedSchedule.id, scheduleData);
+    } else {
+      await addSchedule(scheduleData);
+    }
+
+    onClose();
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white shadow p-4 rounded">
-      <h2 className="text-xl font-semibold mb-4">Add New Schedule</h2>
-      <div className="mb-2">
-        <input
-          type="text"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="border p-2 rounded w-full"
-          required
-        />
-      </div>
-      <div className="mb-2">
-        <label className="block mb-1">Start</label>
-        <div className="flex gap-2">
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="border p-2 rounded"
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) onClose();
+      }}
+    >
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{isEditing ? "일정 수정" : "새 일정 추가"}</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <Input
+            type="text"
+            placeholder="일정 제목"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             required
           />
-          <input
-            type="time"
-            value={startTime}
-            onChange={(e) => setStartTime(e.target.value)}
-            className="border p-2 rounded"
-            required
-          />
-        </div>
-      </div>
-      <div className="mb-2">
-        <label className="block mb-1">End</label>
-        <div className="flex gap-2">
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            className="border p-2 rounded"
-            required
-          />
-          <input
-            type="time"
-            value={endTime}
-            onChange={(e) => setEndTime(e.target.value)}
-            className="border p-2 rounded"
-            required
-          />
-        </div>
-      </div>
-      <button
-        type="submit"
-        className="bg-blue-500 text-white py-2 px-4 rounded"
-      >
-        Add Schedule
-      </button>
-    </form>
+          <div className="flex gap-2">
+            <Input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              required
+            />
+            <Input
+              type="time"
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
+              required
+            />
+          </div>
+          <div className="flex gap-2">
+            <Input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              required
+            />
+            <Input
+              type="time"
+              value={endTime}
+              onChange={(e) => setEndTime(e.target.value)}
+              required
+            />
+          </div>
+          <div className="flex gap-4">
+            <Button type="submit">{isEditing ? "수정" : "추가"}</Button>
+            {isEditing && selectedSchedule && onDelete && (
+              <Button
+                className="bg-red-500"
+                onClick={() => onDelete(selectedSchedule.id)}
+              >
+                삭제
+              </Button>
+            )}
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

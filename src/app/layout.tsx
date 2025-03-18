@@ -4,7 +4,7 @@ import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "🗓️플업 - 계획부터 정산까지",
+  title: "플업 - 계획부터 정산까지",
   description: "Calendar & Schedule Management System",
 };
 

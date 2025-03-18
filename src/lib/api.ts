@@ -10,14 +10,26 @@ export const fetchSchedules = async (): Promise<Schedule[]> => {
   return response.data.items;
 };
 
-export const addSchedule = async (
-  scheduleData: Omit<Schedule, "id">
-): Promise<Schedule> => {
-  const response = await axios.post(`${API_BASE_URL}/schedules`, scheduleData, {
-    headers: { "Content-Type": "application/json" },
-  });
-  return response.data;
-};
+export async function addSchedule(
+  schedule: Omit<Schedule, "id">
+): Promise<Schedule> {
+  try {
+    const response = await fetch("http://43.202.122.199/api/v1/schedules", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(schedule),
+    });
+
+    if (!response.ok) {
+      throw new Error("일정 추가 실패");
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error("추가 오류:", error);
+    throw error;
+  }
+}
 
 export const updateSchedule = async (
   id: number,

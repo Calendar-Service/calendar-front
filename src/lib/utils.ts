@@ -40,17 +40,46 @@ export const changeDateToKorean = (dateTime: string | undefined): string => {
   return result;
 };
 
+export function formatScheduleTime(
+  startDateTime: string,
+  endDateTime: string
+): string {
+  const start = new Date(startDateTime);
+  const end = new Date(endDateTime);
+
+  const formatDate = (date: Date) => {
+    return `${date.getFullYear()}년 ${String(date.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}월 ${String(date.getDate()).padStart(2, "0")}일`;
+  };
+
+  const formatTime = (date: Date) => {
+    return `${String(date.getHours()).padStart(2, "0")}시 ${String(
+      date.getMinutes()
+    ).padStart(2, "0")}분`;
+  };
+
+  if (formatDate(start) === formatDate(end)) {
+    return `${formatDate(start)} ${formatTime(start)} ~ ${formatTime(end)}`;
+  }
+  return `${formatDate(start)} ${formatTime(start)} ~ ${formatDate(
+    end
+  )} ${formatTime(end)}`;
+}
+
 /**
  * Checks whether the given date falls between eventStart and eventEnd (inclusive).
  * Both eventStart and eventEnd are expected to be date-time strings.
  */
-export const isDateInRange = (
-  eventStart: string,
-  eventEnd: string | undefined,
+export function isDateInRange(
+  startDateTime: string,
+  endDateTime: string,
   date: string
-): boolean => {
-  const startDate = new Date(eventStart.split("T")[0]);
-  const endDate = eventEnd ? new Date(eventEnd.split("T")[0]) : startDate;
-  const clickedDate = new Date(date.split("T")[0]);
-  return clickedDate >= startDate && clickedDate <= endDate;
-};
+): boolean {
+  const start = new Date(startDateTime.split(" ")[0]);
+  const end = new Date(endDateTime.split(" ")[0]);
+  const clickedDate = new Date(date);
+
+  return clickedDate >= start && clickedDate <= end;
+}

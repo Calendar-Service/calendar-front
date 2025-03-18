@@ -1,95 +1,106 @@
+// src/app/page.tsx
 "use client";
 
-import Calendar from "@/components/Calendar";
-import EventForm from "@/components/EventForm";
-import { useEffect, useState } from "react";
+import { deleteSchedule, fetchSchedules } from "@/lib/api";
+import { Schedule } from "@/types/schedule";
+import { JSX, useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import ScheduleCalendar from "./schedule/ScheduleCalendar";
+import ScheduleForm from "./schedule/ScheduleForm";
+import ScheduleList from "./schedule/ScheduleList";
 
-const Home = () => {
-  const [events, setEvents] = useState<
-    { id: string; title: string; start: string; end: string }[]
-  >([]);
+export default function Home(): JSX.Element {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(
+    null
+  );
 
+  // 📅 최초 일정 가져오기
   useEffect(() => {
-    fetch("/api/events")
-      .then((res) => res.json())
-      .then((data) => setEvents(data));
+    const loadSchedules = async () => {
+      const data = await fetchSchedules();
+      setSchedules(data);
+    };
+    loadSchedules();
   }, []);
 
-  const addEvent = async (newEvent: {
-    title: string;
-    start: string;
-    end?: string;
-  }) => {
-    const res = await fetch("/api/events", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newEvent),
-    });
-
-    const addedEvent = await res.json();
-    setEvents((prevEvents) => [...prevEvents, addedEvent]);
+  // 📅 날짜 선택 시 해당 날짜 일정 필터링
+  const handleDateSelect = (date: string) => {
+    setSelectedDate(date);
   };
 
-  const isDateInRange = (
-    eventStart: string,
-    eventEnd: string | undefined,
-    date: string
-  ) => {
-    const startDate = new Date(eventStart);
-    const endDate = eventEnd ? new Date(eventEnd) : startDate;
-    const clickedDate = new Date(date);
+  // 🔄 전체 일정 보기
+  const handleClearDate = () => {
+    setSelectedDate(null);
+  };
 
-    return clickedDate >= startDate && clickedDate <= endDate;
+  // 🆕 일정 추가 버튼 클릭 시
+  const handleAddScheduleClick = () => {
+    setSelectedSchedule(null);
+    setIsFormOpen(true);
+  };
+
+  // ✅ 일정 추가/수정 후 업데이트 (onSaveSchedule 함수)
+  const handleSaveSchedule = (
+    updatedSchedule: Schedule,
+    isEditing: boolean
+  ) => {
+    setSchedules((prev) => {
+      if (isEditing) {
+        return prev.map((s) =>
+          s.id === updatedSchedule.id ? updatedSchedule : s
+        );
+      }
+      return [...prev, updatedSchedule];
+    });
+    setIsFormOpen(false);
+  };
+
+  // ❌ 일정 삭제 후 업데이트
+  const handleDeleteSchedule = async (id: number) => {
+    try {
+      await deleteSchedule(id);
+      setSchedules((prev) => prev.filter((s) => s.id !== id)); // ✅ UI에서 즉시 반영
+      toast.success("일정이 삭제되었습니다. 🗑️");
+    } catch (error) {
+      console.error(error);
+      toast.error("일정 삭제에 실패했습니다. ❌");
+    }
   };
 
   return (
-    <main className="flex flex-col items-center gap-6 p-6">
-      <h1 className="text-3xl font-bold">플업과 함께, 계획도 정산도 한방에!</h1>
-
-      {/* 캘린더 + 일정 리스트 레이아웃 */}
-      <div className="flex w-full max-w-5xl gap-4">
-        {/* 캘린더 (2/3) */}
-        <div className="w-2/3 bg-white shadow-lg p-4 rounded-lg">
-          <Calendar events={events} onDateClick={setSelectedDate} />
+    <main className="min-h-screen bg-gray-50 p-6">
+      <div className="flex gap-6">
+        <div className="w-2/3">
+          <ScheduleCalendar
+            schedules={schedules}
+            onDateSelect={handleDateSelect}
+          />
         </div>
-
-        {/* 일정 리스트 (1/3) */}
-        <div className="w-1/3 bg-white shadow-lg p-4 rounded-lg">
-          <h2 className="text-xl font-semibold mb-4">
-            📋 {selectedDate ? `${selectedDate} 일정` : "전체 일정"}
-          </h2>
-          <ul className="space-y-2">
-            {events.filter(
-              (event) =>
-                !selectedDate ||
-                isDateInRange(event.start, event.end, selectedDate)
-            ).length > 0 ? (
-              events
-                .filter(
-                  (event) =>
-                    !selectedDate ||
-                    isDateInRange(event.start, event.end, selectedDate)
-                )
-                .map((event) => (
-                  <li key={event.id} className="p-2 bg-gray-100 rounded-lg">
-                    <p className="font-semibold">{event.title}</p>
-                    <p className="text-sm text-gray-500">
-                      {event.start} ~ {event.end || event.start}
-                    </p>
-                  </li>
-                ))
-            ) : (
-              <p className="text-gray-500">해당 날짜에 일정이 없습니다.</p>
-            )}
-            <div className="justify-self-end">
-              <EventForm onAddEvent={addEvent} />
-            </div>
-          </ul>
+        <div className="w-1/3">
+          <ScheduleList
+            selectedDate={selectedDate}
+            schedules={schedules}
+            onClearDate={handleClearDate}
+            onEditSchedule={(schedule) => {
+              setSelectedSchedule(schedule);
+              setIsFormOpen(true);
+            }}
+            onDeleteSchedule={handleDeleteSchedule}
+            onAddScheduleClick={handleAddScheduleClick}
+          />
         </div>
       </div>
+      {isFormOpen && (
+        <ScheduleForm
+          selectedSchedule={selectedSchedule}
+          open={isFormOpen}
+          onClose={() => setIsFormOpen(false)}
+          onSaveSchedule={handleSaveSchedule}
+        />
+      )}
     </main>
   );
-};
-
-export default Home;
+}

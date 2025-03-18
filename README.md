@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🗓️ **플업 - 계획부터 정산까지**
 
-## Getting Started
+**플업**은 사용자가 **일정을 추가, 수정, 삭제**하고, 캘린더와 리스트에서 즉시 반영할 수 있도록 지원하는 **일정 관리 서비스**입니다.
 
-First, run the development server:
+---
+
+## 🚀 **Implemented Features**
+
+### 📅 **Schedule Management**
+
+- **일정 추가, 수정, 삭제 기능 구현**
+- **캘린더 및 리스트 동기화**로 실시간 일정 관리 가능
+- **날짜 선택 필터링**을 통해 특정 날짜의 일정만 표시
+
+### 🔔 **Real-time Updates & Notifications**
+
+- 일정이 추가/수정/삭제될 때 즉시 리스트 및 캘린더에 반영
+- `toast` 알림을 통해 변경 사항을 실시간으로 확인 가능
+
+### 📝 **Enhanced Schedule List**
+
+- 일정별 **메모 (note) 기능 추가**
+- 삭제 버튼(❌)을 일정 제목 우측에 배치하여 UX 개선
+- 같은 날짜에서 시작 및 종료되는 일정도 정상적으로 표시
+
+---
+
+## 🛠 **Installation & Setup**
 
 ```bash
+git clone https://github.com/Calendar-Service/calendar-front.git
+cd your-project
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

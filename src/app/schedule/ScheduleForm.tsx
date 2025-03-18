@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/Input";
 import { addSchedule, updateSchedule } from "@/lib/api";
 import { Schedule } from "@/types/schedule";
 import { JSX, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 interface ScheduleFormProps {
   selectedSchedule?: Schedule | null;
@@ -67,13 +68,20 @@ export default function ScheduleForm({
       userId: 1,
     };
 
-    if (isEditing && selectedSchedule) {
-      await updateSchedule(selectedSchedule.id, scheduleData);
-    } else {
-      await addSchedule(scheduleData);
+    try {
+      if (isEditing && selectedSchedule) {
+        await updateSchedule(selectedSchedule.id, scheduleData);
+        toast.success("일정이 수정되었습니다. ✅");
+      } else {
+        await addSchedule(scheduleData);
+        toast.success("새 일정이 추가되었습니다. 🎉");
+      }
+      onClose();
+    } catch (error) {
+      const errorMessage = error as Error;
+      console.error(errorMessage);
+      toast.error("일정 저장 중 오류가 발생했습니다. ❌");
     }
-
-    onClose();
   };
 
   return (

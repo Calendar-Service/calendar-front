@@ -2,6 +2,7 @@
 "use client";
 
 import { JSX, useState } from "react";
+import { Toaster } from "react-hot-toast";
 import ScheduleCalendar from "./schedule/ScheduleCalendar";
 import ScheduleForm from "./schedule/ScheduleForm";
 import ScheduleList from "./schedule/ScheduleList";
@@ -50,6 +51,7 @@ export default function Home(): JSX.Element {
           onClose={handleFormClose}
         />
       )}
+      <Toaster position="top-right" reverseOrder={false} />
     </main>
   );
 }

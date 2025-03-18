@@ -55,10 +55,6 @@ export default function Home(): JSX.Element {
       }
       return [...prev, updatedSchedule];
     });
-
-    toast.success(
-      isEditing ? "일정이 수정되었습니다. ✅" : "새 일정이 추가되었습니다. 🎉"
-    );
     setIsFormOpen(false);
   };
 

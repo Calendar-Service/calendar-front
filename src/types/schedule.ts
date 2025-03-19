@@ -5,7 +5,7 @@ export interface Schedule {
   note: string;
   startDateTime: string; // e.g., "2020-12-21 12:12:12" or ISO string
   endDateTime: string;
-  userId: number;
+  memberId: number;
 }
 
 export interface ScheduleResponse {

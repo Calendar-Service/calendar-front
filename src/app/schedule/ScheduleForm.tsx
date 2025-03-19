@@ -68,7 +68,7 @@ export default function ScheduleForm({
       note,
       startDateTime: `${startDate} ${startTime}`,
       endDateTime: `${endDate} ${endTime}`,
-      userId: 1,
+      memberId: 1,
     };
 
     try {

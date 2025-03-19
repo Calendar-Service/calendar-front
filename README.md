@@ -29,7 +29,7 @@
 
 ```bash
 git clone https://github.com/Calendar-Service/calendar-front.git
-cd your-project
+cd calendar-front
 npm install
 npm run dev
 ```

@@ -1,13 +1,9 @@
 // src/app/schedule/ScheduleList.tsx
 "use client";
 
-import {
-  changeDateToKorean,
-  formatScheduleTime,
-  isDateInRange,
-} from "@/lib/utils";
+import { changeDateToKorean, isDateInRange } from "@/lib/utils";
 import { Schedule } from "@/types/schedule";
-import { JSX } from "react";
+import { JSX, useState } from "react";
 
 interface ScheduleListProps {
   selectedDate: string | null;
@@ -18,6 +14,8 @@ interface ScheduleListProps {
   onAddScheduleClick: () => void;
 }
 
+const MAX_LENGTH = 20;
+
 export default function ScheduleList({
   selectedDate,
   schedules,
@@ -26,6 +24,17 @@ export default function ScheduleList({
   onDeleteSchedule,
   onAddScheduleClick,
 }: ScheduleListProps): JSX.Element {
+  const [expandedNotes, setExpandedNotes] = useState<{
+    [key: number]: boolean;
+  }>({});
+
+  const toggleNote = (id: number) => {
+    setExpandedNotes((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
   const filteredSchedules = schedules.filter((schedule) => {
     if (!selectedDate) return true;
     return isDateInRange(
@@ -63,41 +72,76 @@ export default function ScheduleList({
       </div>
       {filteredSchedules.length > 0 ? (
         <ul className="space-y-4">
-          {filteredSchedules.map((schedule) => (
-            <li
-              key={schedule.id}
-              className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow duration-200 flex justify-between items-center cursor-pointer"
-              onClick={() => onEditSchedule(schedule)}
-            >
-              {/* 일정 제목 및 날짜 */}
-              <div className="flex flex-col">
-                <p className="text-lg font-semibold text-gray-900">
-                  {schedule.title}
-                </p>
-                <p className="text-sm text-gray-600">
-                  {formatScheduleTime(
-                    schedule.startDateTime,
-                    schedule.endDateTime
-                  )}
-                </p>
-                {schedule.note && (
-                  <p className="text-sm text-gray-500 italic">
-                    📝 {schedule.note}
-                  </p>
-                )}
-              </div>
+          {filteredSchedules.map((schedule) => {
+            const isExpanded = expandedNotes[schedule.id] || false;
+            const note = schedule.note || "";
+            const shouldTruncate = note.length > MAX_LENGTH;
 
-              <button
-                className="text-gray-500 hover:text-red-500 text-xl ml-4"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDeleteSchedule(schedule.id);
-                }}
+            return (
+              <li
+                key={schedule.id}
+                className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow duration-200 flex justify-between items-start cursor-pointer"
+                onClick={() => onEditSchedule(schedule)}
               >
-                ❌
-              </button>
-            </li>
-          ))}
+                <div className="flex flex-col w-full">
+                  <p className="text-lg font-semibold text-gray-900">
+                    {schedule.title}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {changeDateToKorean(schedule.startDateTime)} ~{" "}
+                    {changeDateToKorean(schedule.endDateTime)}
+                  </p>
+                  {note && (
+                    <p
+                      className="text-sm text-gray-500 mt-1 whitespace-pre-wrap"
+                      style={{ whiteSpace: "pre-wrap" }}
+                    >
+                      {shouldTruncate && !isExpanded ? (
+                        <>
+                          {note.slice(0, MAX_LENGTH)}...{" "}
+                          <span
+                            className="text-blue-500 cursor-pointer hover:underline"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleNote(schedule.id);
+                            }}
+                          >
+                            더보기
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          {note}{" "}
+                          {shouldTruncate && (
+                            <span
+                              className="text-blue-500 cursor-pointer hover:underline"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleNote(schedule.id);
+                              }}
+                            >
+                              접기
+                            </span>
+                          )}
+                        </>
+                      )}
+                    </p>
+                  )}
+                </div>
+
+                {/* ❌ 삭제 버튼 */}
+                <button
+                  className="text-gray-500 hover:text-red-500 text-xl ml-4"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteSchedule(schedule.id);
+                  }}
+                >
+                  ❌
+                </button>
+              </li>
+            );
+          })}
         </ul>
       ) : (
         <p className="text-center text-gray-500">

@@ -32,10 +32,7 @@
 - **TypeScript 5**
 
 ### 💅 **Styling**
-- **Tailwind CSS 4** - 유틸리티 기반 스타일링
-- **tailwindcss-animate** - 애니메이션 효과
-- **clsx** - 조건부 클래스 관리
-- **class-variance-authority** - 스타일 유연성 향상
+- **Tailwind CSS 4**
 
 ### 📅 **Calendar**
 - **FullCalendar**
